@@ -1,15 +1,16 @@
 pipeline:
   build_docker_image:
-    image: docker:1.11
+    image: docker:1.12
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
+      - wget https://github.com/CentOS/sig-cloud-instance-images/raw/CentOS-7/docker/centos-7-docker.tar.xz 
       - docker build -t centos-base .
     when:
       event: [push, tag]
 
   image_to_quay:
-    image: docker:1.11
+    image: docker:1.12
     environment:
       - DOCKER_HOST=tcp://127.0.0.1:2375
     commands:
@@ -23,7 +24,7 @@ pipeline:
 
 services:
   dind:
-    image: docker:1.11-dind
+    image: docker:1.12-dind
     privileged: true
     command:
       - "-s"

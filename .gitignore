@@ -1,6 +1,6 @@
 ### Linux template
 *~
-
+*.tar.xz
 # KDE directory preferences
 .directory
 
