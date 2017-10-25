@@ -1,30 +1,38 @@
 pipeline:
   build_docker_image:
-    image: docker:1.11
+    image: docker:17.09.0-ce
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker build -t centos-base .
+      - docker build -t centos-base:$${DRONE_COMMIT_SHA} .
     when:
       event: [push, tag]
 
   image_to_quay:
-    image: docker:1.11
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+drone" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag centos-base quay.io/ukhomeofficedigital/centos-base:${DRONE_TAG}
-      - docker tag centos-base quay.io/ukhomeofficedigital/centos-base:latest
-      - docker push quay.io/ukhomeofficedigital/centos-base:${DRONE_TAG}
+      - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
+      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
+      - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/centos-base:latest
     when:
-      event: tag
+      event: push
+      branch: master
 
-services:
-  dind:
-    image: docker:1.11-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
+  tagged_image_to_quay:
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+    when:
+      event: tag
