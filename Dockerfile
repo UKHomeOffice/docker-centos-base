@@ -1,6 +1,7 @@
 FROM centos:centos7
 
 RUN yum clean all \
+ && yum install yum-plugin-ovl \
  && yum update -y \
  && yum clean all \
  && rpm --rebuilddb
