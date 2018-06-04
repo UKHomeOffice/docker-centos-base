@@ -33,6 +33,8 @@ pipeline:
     commands:
       - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
       - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
       - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/centos-base:latest
     when:
       event: tag
