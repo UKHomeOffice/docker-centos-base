@@ -1,6 +1,6 @@
 pipeline:
   build_docker_image:
-    image: docker:17.09.0-ce
+    image: docker:19.03.1
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
@@ -8,8 +8,15 @@ pipeline:
     when:
       event: [push, tag]
 
+  scan:
+    image: quay.io/ukhomeofficedigital/anchore-submission:latest
+    image_name: centos-base:${DRONE_COMMIT_SHA}
+    local_image: true
+    when:
+      event: push
+
   image_to_quay:
-    image: docker:17.09.0-ce
+    image: docker:19.03.1
     secrets:
       - docker_password
     environment:
@@ -25,7 +32,7 @@ pipeline:
       branch: master
 
   tagged_image_to_quay:
-    image: docker:17.09.0-ce
+    image: docker:19.03.1
     secrets:
       - docker_password
     environment:
