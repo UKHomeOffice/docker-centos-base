@@ -10,6 +10,8 @@ pipeline:
 
   scan:
     image: quay.io/ukhomeofficedigital/anchore-submission:latest
+    environment:
+      - WHITELIST=CVE-2019-5827
     image_name: centos-base:${DRONE_COMMIT_SHA}
     local_image: true
     when:
