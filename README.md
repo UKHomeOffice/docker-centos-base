@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/UKHomeOffice/docker-centos-base.svg?branch=master)](https://travis-ci.org/UKHomeOffice/docker-centos-base)
 
-This is a base image to ensure that all Home Office containers are starting from a known state. This allows us to 
-monitor for security problems in only one operating system, rather than 5 or 6. It also gives us a place to insert 
+This is a base image to ensure that all Home Office containers are starting from a known state. This allows us to
+monitor for security problems in only one operating system, rather than 5 or 6. It also gives us a place to insert
 fixes.
 
 ## Getting Started
 
-These instructions will cover usage information and for the docker container 
+These instructions will cover usage information and for the docker container
 
 ### Prerequisities
 
@@ -47,14 +47,14 @@ pull requests to us.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the 
-[tags on this repository](https://github.com/UKHomeOffice/docker-centos-base/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the
+[tags on this repository](https://github.com/UKHomeOffice/docker-centos-base/tags).
 
 ## Authors
 
 * **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
-See also the list of [contributors](https://github.com/UKHomeOffice/docker-centos-base/contributors) who 
+See also the list of [contributors](https://github.com/UKHomeOffice/docker-centos-base/contributors) who
 participated in this project.
 
 ## License
