@@ -1,7 +1,8 @@
 FROM centos:centos8
 
+RUN echo "%_netsharedpath /sys:/proc" >> /etc/rpm/macros.dist
 
- RUN dnf update -y  \
+RUN dnf update -y  \
   && dnf autoremove -y \
   && dnf clean all -y \
   && rm -rf /var/cache/dnf
