@@ -1,49 +1,74 @@
-pipeline:
-  build_docker_image:
-    image: docker:19.03.1
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker build -t centos-base:$${DRONE_COMMIT_SHA} .
-    when:
-      event: [push, tag]
+---
+kind: pipeline
+name: default
+type: kubernetes
 
-  scan:
-    image: quay.io/ukhomeofficedigital/anchore-submission:latest
-    environment:
-      - WHITELIST=CVE-2019-5827
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build_docker_image
+  pull: if-not-exists
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  commands:
+  - n=0; while [ "$n" -lt 60 ] && [ ! docker stats --no-stream ]; do n=$(( n + 1 )); sleep 1; done
+  - docker build -t centos-base:$${DRONE_COMMIT_SHA} .
+  when:
+    event:
+    - push
+    - tag
+
+- name: scan
+  pull: if-not-exists
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission
+  settings:
     image_name: centos-base:${DRONE_COMMIT_SHA}
-    local_image: true
-    when:
-      event: push
+    whitelist: CVE-2019-5827, CVE-2021-25215
+  when:
+    event:
+    - push
 
-  image_to_quay:
-    image: docker:19.03.1
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
-      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
-      - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
-      - docker push quay.io/ukhomeofficedigital/centos-base:latest
-    when:
-      event: push
-      branch: master
+- name: image_to_quay
+  pull: if-not-exists
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  commands:
+  - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
+  - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
+  - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
+  - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_COMMIT_SHA}
+  - docker push quay.io/ukhomeofficedigital/centos-base:latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    branch:
+    - master
+    event:
+    - push
 
-  tagged_image_to_quay:
-    image: docker:19.03.1
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
-      - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
-      - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/centos-base:latest
-    when:
-      event: tag
+- name: tagged_image_to_quay
+  pull: if-not-exists
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  commands:
+  - docker login -u="ukhomeofficedigital+drone" -p=$${DOCKER_PASSWORD} quay.io
+  - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+  - docker tag centos-base:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/centos-base:latest
+  - docker push quay.io/ukhomeofficedigital/centos-base:$${DRONE_TAG}
+  - docker push quay.io/ukhomeofficedigital/centos-base:latest
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    event:
+    - tag
+
+services:
+- name: docker
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+
+- name: anchore-submission-server
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+  pull: always
+  commands:
+    - /run.sh server
