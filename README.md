@@ -1,7 +1,5 @@
 # Docker Base Image for the Home Office
 
-[![Build Status](https://travis-ci.org/UKHomeOffice/docker-centos-base.svg?branch=master)](https://travis-ci.org/UKHomeOffice/docker-centos-base)
-
 This is a base image to ensure that all Home Office containers are starting from a known state. This allows us to 
 monitor for security problems in only one operating system, rather than 5 or 6. It also gives us a place to insert 
 fixes.
@@ -12,12 +10,7 @@ These instructions will cover usage information and for the docker container
 
 ### Prerequisities
 
-
-In order to run this container you'll need docker installed.
-
-* [Windows](https://docs.docker.com/windows/started)
-* [OS X](https://docs.docker.com/mac/started/)
-* [Linux](https://docs.docker.com/linux/started/)
+In order to run this container you'll need [docker](https://docs.docker.com/get-started/) installed.
 
 ### Usage
 
@@ -33,7 +26,7 @@ docker run -it quay.io/ukhomeofficedigital/centos-base bash
 
 ## Built With
 
-* CentOS 7
+* CentOS 8
 
 ## Find Us
 
