@@ -24,7 +24,7 @@ steps:
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission
   settings:
     image_name: centos-base:${DRONE_COMMIT_SHA}
-    whitelist: CVE-2019-5827, CVE-2021-25215
+    whitelist: CVE-2019-5827
   when:
     event:
     - push
