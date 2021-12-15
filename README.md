@@ -1,5 +1,7 @@
 # Docker Base Image for the Home Office
 
+**Deprecation notice: This repo is no longer maintained by ACP. You’re welcome to fork it according to your own needs.**
+
 This is a base image to ensure that all Home Office containers are starting from a known state. This allows us to 
 monitor for security problems in only one operating system, rather than 5 or 6. It also gives us a place to insert 
 fixes.
